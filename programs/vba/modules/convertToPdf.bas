@@ -1,7 +1,8 @@
 Attribute VB_Name = "convertToPdf"
 ' Tools > Reference Settings > Microsoft Word 16.0 Object Library
 Option Explicit
-Public Const outputFolderPath As String = "C:\Users\Mariko\Box\Datacenter\Users\ohtsuka\2023\20230926\output\"
+Public Const debugFlag As Boolean = True
+
 Public Sub ExecConvertToPdf()
     Dim file As Variant
     Dim paramList As collection
@@ -18,16 +19,6 @@ Public Sub ExecConvertToPdf()
 
 End Sub
 
-Private Function EditInputParentPath() As String
-    Dim fiscalYear As Integer
-    fiscalYear = GetFiscalYear() - 1
-    Const inputParentPathHeader As String = "C:\Users\Mariko\Box\Projects\ISO\QMS・ISMS文書\04 記録\"
-    Const inputParentPathFooter As String = "年度\ドラフト\"
-    Dim inputParentPath As String
-    inputParentPath = inputParentPathHeader & fiscalYear & inputParentPathFooter
-    EditInputParentPath = inputParentPath
-
-End Function
 Private Function CreateLatestFileList() As collection
     Dim myMap As collection
     Set myMap = New collection
@@ -39,6 +30,10 @@ Private Function CreateLatestFileList() As collection
     isf_latestFile.Add "ISF23-1 "
     isf_latestFile.Add "ISF25 "
     isf_latestFile.Add "ISF27-1 "
+    isf_latestFile.Add "ISF27-2 "
+    isf_latestFile.Add "ISF27-3 "
+    isf_latestFile.Add "ISF27-4 "
+    isf_latestFile.Add "ISF27-7 "
     myMap.Add isf_latestFile
     
     Dim qf_latestFile As collection
@@ -48,6 +43,7 @@ Private Function CreateLatestFileList() As collection
     qf_latestFile.Add "QF04 "
     qf_latestFile.Add "QF06 "
     qf_latestFile.Add "QF13 "
+    qf_latestFile.Add "QF23 "
     myMap.Add qf_latestFile
     
     Set CreateLatestFileList = myMap
@@ -62,20 +58,22 @@ Private Sub ConvertToPdf(targetFolderName As String, param As Variant)
     Dim fileCollection As collection
     Dim outputFilePath As String
     Dim nfcPath As String
+    Dim targetFileCollection As collection
     Dim dummy As Variant
-    Dim inputParentPath As String
-    inputParentPath = EditInputParentPath()
+    Dim editPath As New ClassEditPath
     Dim inputFolderPath As String
-    inputFolderPath = inputParentPath & targetFolderName & "\"
+    inputFolderPath = editPath.GetInputPath(targetFolderName)
+    Dim outputFolderPath As String
+    outputFolderPath = editPath.GetOutputPath(targetFolderName)
     
     ' Create an instance of the application to manipulate files
     Set wordObject = CreateObject("Word.Application")
     ' Loop through all files in the input folder
     Set fileCollection = GetAllFilesInFolder(inputFolderPath)
-    dummy = FilterFiles(fileCollection, param)
+    Set targetFileCollection = FilterFiles(fileCollection, param)
     
     Dim path As Variant
-    For Each path In fileCollection
+    For Each path In targetFileCollection
         fileName = GetFileName(path)
         fileExtension = GetFileExtension(fileName)
         outputFilePath = outputFolderPath & Replace(fileName, fileExtension, "pdf")
@@ -96,8 +94,10 @@ Private Sub ConvertToPdf(targetFolderName As String, param As Variant)
         End If
         If fileExtension = "docx" Or fileExtension = "doc" Then
             Set wdDoc = wordObject.Documents.Open(path)
-            wdDoc.ExportAsFixedFormat OutputFileName:=outputFilePath, ExportFormat:=17
-            wdDoc.Close SaveChanges:=False
+            If Not wdDoc Is Nothing Then
+                wdDoc.ExportAsFixedFormat OutputFileName:=outputFilePath, ExportFormat:=17
+                wdDoc.Close SaveChanges:=False
+            End If
         End If
     Next path
     

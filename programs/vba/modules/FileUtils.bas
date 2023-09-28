@@ -1,17 +1,24 @@
 Attribute VB_Name = "FileUtils"
 Option Explicit
 
-Public Function FilterFiles(fileCollection As collection, param As Variant) As String()
+Public Function FilterFiles(fileCollection As collection, param As Variant) As collection
     Dim filePath As Variant
     Dim targetFileName As Variant
     Dim fileName As String
-    Dim latestFileNameList() As String
-    Dim latestFileCount As Integer
-    latestFileCount = 0
-    Dim dummy As Variant
+    Dim latestFileName As String
+    Dim tempFileName As Variant
+    Dim j As Integer
+    Dim removeTargetList() As String
+    Dim removeCount As Integer
+    Dim path As Variant
+    Dim removePath As Variant
+    Dim removeFlag As Boolean
+    Dim targetFileCollection As collection
+    removeCount = 0
             
     For Each targetFileName In param
         Dim target() As String
+        Dim removeTargetPath() As String
         Dim i As Integer
         i = -1
         For Each filePath In fileCollection
@@ -19,22 +26,40 @@ Public Function FilterFiles(fileCollection As collection, param As Variant) As S
             If Left(fileName, Len(targetFileName)) = targetFileName Then
                 i = i + 1
                 ReDim Preserve target(i)
+                ReDim Preserve removeTargetPath(i)
                 target(i) = fileName
+                removeTargetPath(i) = filePath
             End If
         Next filePath
         If i > -1 Then
-            ReDim Preserve latestFileNameList(latestFileCount)
-            latestFileNameList(latestFileCount) = GetLatestFileName(target)
-            latestFileCount = latestFileCount + 1
+            latestFileName = GetLatestFileName(target)
+            If latestFileName <> "" Then
+                For j = LBound(removeTargetPath) To UBound(removeTargetPath)
+                    If Right(removeTargetPath(j), Len(latestFileName)) <> latestFileName Then
+                        ReDim Preserve removeTargetList(removeCount)
+                        removeTargetList(removeCount) = removeTargetPath(j)
+                        removeCount = removeCount + 1
+                    End If
+                Next j
+            End If
         End If
     Next targetFileName
     
-    
-Dim filteredArray(1) As String
-filteredArray(0) = "saaa"
-    
-    
-FilterFiles = filteredArray
+    Set targetFileCollection = New collection
+    For Each path In fileCollection
+        removeFlag = False
+        For Each removePath In removeTargetList
+            If path = removePath Then
+                removeFlag = True
+                Exit For
+            End If
+        Next removePath
+        If Not (removeFlag) Then
+            targetFileCollection.Add path
+        End If
+    Next path
+    Set FilterFiles = targetFileCollection
+
 End Function
 
 Private Function GetLatestFileName(fileNameList() As String) As String
