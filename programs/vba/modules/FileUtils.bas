@@ -149,16 +149,16 @@ Public Function GetYmd(fileName As String) As Long
 End Function
 
 Public Function GetAllFilesInFolder(ByVal folderPath As String) As collection
-    Dim FSO As Object
+    Dim fso As Object
     Dim parentFolder As Object
-    Dim subfolder As Object
+    Dim subFolder As Object
     Dim filesCollection As collection
     
     ' Create a FileSystemObject
-    Set FSO = CreateObject("Scripting.FileSystemObject")
+    Set fso = CreateObject("Scripting.FileSystemObject")
     
     ' Get the parent folder
-    Set parentFolder = FSO.GetFolder(folderPath)
+    Set parentFolder = fso.GetFolder(folderPath)
     
     ' Create a collection to store the file list
     Set filesCollection = New collection
@@ -167,9 +167,9 @@ Public Function GetAllFilesInFolder(ByVal folderPath As String) As collection
     AddFilesToCollection parentFolder, filesCollection
     
     ' Add files in subfolders to the collection as well (recursively)
-    For Each subfolder In parentFolder.SubFolders
-        AddFilesToCollection subfolder, filesCollection
-    Next subfolder
+    For Each subFolder In parentFolder.subFolders
+        AddFilesToCollection subFolder, filesCollection
+    Next subFolder
     
     ' Return the collection of file paths
     Set GetAllFilesInFolder = filesCollection

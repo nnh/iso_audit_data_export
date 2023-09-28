@@ -4,12 +4,12 @@ Option Explicit
 
 Public Sub ExportVbaFiles()
     Dim exportPath As String
-    Dim FSO As Scripting.FileSystemObject
+    Dim fso As Scripting.FileSystemObject
     Dim exportModule As Variant
     exportPath = ThisWorkbook.path & "\modules"
-    Set FSO = CreateObject("Scripting.FileSystemObject")
-    If Not FSO.FolderExists(exportPath) Then
-        FSO.CreateFolder exportPath
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    If Not fso.FolderExists(exportPath) Then
+        fso.CreateFolder exportPath
     End If
     For Each exportModule In ThisWorkbook.VBProject.VBComponents
         If exportModule.Type = 1 Then
