@@ -10,9 +10,9 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private parentPathHeader As String
+Private fiscalYear As Integer
 
 Private Sub Class_Initialize()
-    Dim fiscalYear As Integer
     fiscalYear = GetFiscalYear()
     Dim parentPathHeaderHead As String
     parentPathHeaderHead = "C:\Users\Mariko\Box\Projects\ISO\QMS・ISMS文書\04 記録\"
@@ -20,27 +20,31 @@ Private Sub Class_Initialize()
 End Sub
 
 Public Function GetInputPath(folderName As String) As String
-    Const constDraftText1 As String = "ドラフト\"
-    Const constDraftText2 As String = "ト゛ラフト\"
-    Const constDraftTextPart As String = "ラフト"
-    Dim inputPath As String
-    Dim fso As FileSystemObject
-    Dim parentFolder As Variant
-    Dim subFolders As Variant
     Dim targetPath As String
-    targetPath = ""
-    Set fso = New FileSystemObject
-    Set parentFolder = fso.GetFolder(parentPathHeader)
-    Set subFolders = parentFolder.subFolders
+    targetPath = GetDraftPath(parentPathHeader)
+    GetInputPath = targetPath & "\" & folderName & "\"
+    '
+End Function
+
+Private Function GetDraftPath(parentFolderPath As String) As String
+    Const constDraftTextPart As String = "ラフト"
+    Dim parentFolder As Variant
+    Dim fso As FileSystemObject
+    Dim subFolders As Variant
     Dim subFolder As Variant
+    Dim targetPath As String
+    Set fso = New FileSystemObject
+    Set parentFolder = fso.GetFolder(parentFolderPath)
+    Set subFolders = parentFolder.subFolders
+    targetPath = ""
     For Each subFolder In subFolders
-        If Right(subFolder.Name, Len(constDraftTextPart)) = constDraftTextPart Then
-            targetPath = subFolder.path & "\" & folderName & "\"
+        If InStr(1, subFolder.Name, constDraftTextPart) > 0 Then
+            targetPath = subFolder.path
             Exit For
         End If
     Next subFolder
-    GetInputPath = targetPath
-    '
+    GetDraftPath = targetPath
+
 End Function
 
 Public Function GetOutputPath(folderName As String) As String
@@ -51,3 +55,9 @@ Public Function GetOutputPath(folderName As String) As String
     End If
 End Function
 
+Public Function GetDocumentListPath() As String
+    Dim parentPathHeaderHead As String
+    parentPathHeaderHead = "C:\Users\Mariko\Box\Projects\ISO\QMS・ISMS文書\"
+    GetDocumentListPath = GetDraftPath(parentPathHeaderHead)
+
+End Function

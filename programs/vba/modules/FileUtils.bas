@@ -62,7 +62,7 @@ Public Function FilterFiles(fileCollection As collection, param As Variant) As c
 
 End Function
 
-Private Function GetLatestFileName(fileNameList() As String) As String
+Public Function GetLatestFileName(fileNameList() As String) As String
     Dim fileName As Variant
     Dim fileExtension As String
     Dim latestYmd() As Long

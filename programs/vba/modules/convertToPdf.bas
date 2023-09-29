@@ -89,14 +89,14 @@ Private Sub ConvertToPdf(targetFolderName As String, param As Variant)
                     Quality:=xlQualityStandard, IncludeDocProperties:=True, IgnorePrintAreas:=False, _
                     OpenAfterPublish:=False
                 ' Close the file without saving
-                wb.Close SaveChanges:=False
+                wb.Close savechanges:=False
             End If
         End If
         If fileExtension = "docx" Or fileExtension = "doc" Then
             Set wdDoc = wordObject.Documents.Open(path)
             If Not wdDoc Is Nothing Then
                 wdDoc.ExportAsFixedFormat OutputFileName:=outputFilePath, ExportFormat:=17
-                wdDoc.Close SaveChanges:=False
+                wdDoc.Close savechanges:=False
             End If
         End If
     Next path
