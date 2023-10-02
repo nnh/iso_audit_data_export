@@ -5,7 +5,7 @@ Public Const debugFlag As Boolean = True
 
 Public Sub ExecConvertToPdf()
     Dim file As Variant
-    Dim paramList As collection
+    Dim paramList As Collection
     Set paramList = CreateLatestFileList()
     Dim targetFolderName As String
     
@@ -19,12 +19,12 @@ Public Sub ExecConvertToPdf()
 
 End Sub
 
-Private Function CreateLatestFileList() As collection
-    Dim myMap As collection
-    Set myMap = New collection
+Public Function CreateLatestFileList() As Collection
+    Dim myMap As Collection
+    Set myMap = New Collection
     
-    Dim isf_latestFile As collection
-    Set isf_latestFile = New collection
+    Dim isf_latestFile As Collection
+    Set isf_latestFile = New Collection
     isf_latestFile.Add "ISMS（情報システム研究室）"
     isf_latestFile.Add "ISF01 "
     isf_latestFile.Add "ISF23-1 "
@@ -36,8 +36,8 @@ Private Function CreateLatestFileList() As collection
     isf_latestFile.Add "ISF27-7 "
     myMap.Add isf_latestFile
     
-    Dim qf_latestFile As collection
-    Set qf_latestFile = New collection
+    Dim qf_latestFile As Collection
+    Set qf_latestFile = New Collection
     qf_latestFile.Add "QMS（情報システム研究室）"
     qf_latestFile.Add "QF01 "
     qf_latestFile.Add "QF04 "
@@ -55,10 +55,10 @@ Private Sub ConvertToPdf(targetFolderName As String, param As Variant)
     Dim fileExtension As String
     Dim wb As Workbook
     Dim wdDoc As Word.Document
-    Dim fileCollection As collection
+    Dim fileCollection As Collection
     Dim outputFilePath As String
     Dim nfcPath As String
-    Dim targetFileCollection As collection
+    Dim targetFileCollection As Collection
     Dim dummy As Variant
     Dim editPath As New ClassEditPath
     Dim inputFolderPath As String

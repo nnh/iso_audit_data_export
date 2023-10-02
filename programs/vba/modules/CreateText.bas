@@ -3,6 +3,12 @@ Option Explicit
 
 
 Public Sub testcreatetext()
+    Dim editPath As New ClassEditPath
+    Dim outputFolderPath As String
+    Dim paramList As Collection
+    Set paramList = CreateLatestFileList()
+    outputFolderPath = editPath.GetOutputPath(targetFolderName)
+    
     Dim targetWorksheet As Variant
     Call GetTargetWorksheets
 End Sub
@@ -12,51 +18,73 @@ Private Sub GetTargetWorksheets()
     Dim targetSheetName(1) As String
     targetSheetName(0) = "文書管理台帳(2)"
     targetSheetName(1) = "文書管理台帳(3)"
-    Dim targetCategoryHeader(1) As String
-    targetCategoryHeader(0) = "QF"
-    targetCategoryHeader(1) = "ISF"
-    Dim targetSheetValues() As Variant
-    ReDim targetSheetValues(UBound(targetSheetName))
+    Dim targetSheetValues As Variant
     Set wb = GetTargetDocument()
     If wb Is Nothing Then
         Exit Sub
     End If
+    Dim tempTargetSheetValues As Variant
+    Dim addRowCount As Integer
+    Dim startRow As Integer
+    Dim inputLastRow As Integer
+    Dim colCount As Integer
+    Dim rowCount As Integer
+    Dim wk1Worksheet As Worksheet
+    Set wk1Worksheet = ThisWorkbook.Worksheets("wk1")
+    wk1Worksheet.Cells.Clear
+    startRow = 1
+    Dim tempAddress As String
     For i = LBound(targetSheetName) To UBound(targetSheetName)
-        targetSheetValues(i) = wb.Worksheets(targetSheetName(i)).UsedRange.Value
+        tempAddress = wb.Worksheets(targetSheetName(i)).UsedRange.Address(ReferenceStyle:=xlR1C1)
+        inputLastRow = Split(Split(tempAddress, "R")(2), "C")(0)
+        tempTargetSheetValues = wb.Worksheets(targetSheetName(i)).Range("A1:J" & inputLastRow).Value
+        wk1Worksheet.Range("A" & startRow & ":J" & startRow + inputLastRow - 1).Value = tempTargetSheetValues
+        startRow = inputLastRow + 1
     Next i
     wb.Close savechanges:=False
     Dim targetValuesList() As String
     Dim targetValues() As String
-    Dim dummy As Variant
-    For i = LBound(targetSheetValues) To UBound(targetSheetValues)
-        targetValues = GetTargetValues(targetSheetValues(i), targetCategoryHeader(i))
-        dummy = CreateFileNames(targetValues)
+    Dim fileNames() As String
+    targetSheetValues = wk1Worksheet.UsedRange.Value
+    targetValues = GetTargetValues(targetSheetValues)
+    fileNames = CreateFileNames(targetValues)
+    wk1Worksheet.Cells.Clear
         
-    Next i
-Debug.Print 0
 End Sub
-Private Function CreateFileNames(targetValues() As String) As Variant
+Private Sub CreateTextFile(fileNames() As String)
+    Dim targetCategoryHeader() As String
+    targetCategoryHeader = GetCategoryHeaderList()
+
+End Sub
+Private Function CreateFileNames(targetValues() As String) As String()
     Dim index As Object
-    Dim dummy As String
+    Dim fileName As String
     Set index = CreateTargetValuesIndex()
     Dim i As Integer
     Dim arr() As String
     ReDim arr(UBound(targetValues, 1))
+    Dim targetFilenames() As String
+    Dim fileNameCount As Integer
+    fileNameCount = 0
     For i = LBound(targetValues, 2) To UBound(targetValues, 2)
         Dim j As Integer
         For j = LBound(targetValues, 1) To UBound(targetValues, 1)
             arr(j) = targetValues(j, i)
         Next j
-        dummy = CreateFileName(arr, index)
-        Debug.Print dummy
+        fileName = CreateFileName(arr, index, targetValues)
+        If fileName <> "" Then
+            Debug.Print fileName
+            ReDim Preserve targetFilenames(fileNameCount)
+            targetFilenames(fileNameCount) = fileName
+            fileNameCount = fileNameCount + 1
+        End If
     Next i
-    CreateFileNames = ""
+    CreateFileNames = targetFilenames
 End Function
-Private Function CreateFileName(values() As String, index As Object) As String
+Private Function CreateFileName(values() As String, index As Object, targetValues() As String) As String
     Const constRef As String = "参照"
     Dim textHeader As String
     Dim temp As Variant
-    Dim refCategory As String
     Dim targetDept As String
     Const dc As String = "データ管理室"
     Const isr As String = "情報システム研究室"
@@ -67,26 +95,43 @@ Private Function CreateFileName(values() As String, index As Object) As String
     ' 「【区分】【記録名】」までは共通
     textHeader = values(index("category")) & " " & values(index("itemName"))
     Dim fileName As String
+    Dim refCategoryText As String
     fileName = textHeader
+    If InStr(1, values(index("format")), "紙") Then
+        targetDept = dc
+        refCategoryText = "紙保管"
     ' ISRに…参照の文字列が存在する場合、ファイル名は「【区分】【記録名】情報システム研究室【区分】参照」
-    If InStr(1, values(index("isr")), constRef) > 0 Then
-        targetDept = isr
-        refCategory = GetRefCategoryName(values(index("isr")), constRef)
-        fileName = "*"
+    ElseIf InStr(1, values(index("isr")), constRef) > 0 Then
+        targetDept = isr & " "
+        refCategoryText = GetRefCategoryByItemName(values(index("category")), values(index("itemName")), index, targetValues)
+        refCategoryText = refCategoryText & " " & constRef
     ' DCに…参照の文字列が存在する場合、ファイル名は「【区分】【記録名】データ管理室【区分】参照」
     ElseIf InStr(1, values(index("dc")), constRef) > 0 Then
-        targetDept = dc
-        refCategory = GetRefCategoryName(values(index("dc")), constRef)
-        fileName = "#"
+        targetDept = dc & " "
+        refCategoryText = GetRefCategoryByItemName(values(index("category")), values(index("itemName")), index, targetValues)
+        refCategoryText = refCategoryText & " " & constRef
     ' ISRが空白でDCが○の場合、ファイル名は「【区分】【記録名】データ管理室【区分】参照」
     ElseIf values(index("isr")) = "" And values(index("dc")) <> "" Then
-        targetDept = dc
-        refCategory = ""
-        fileName = fileName & " " & targetDept & values(index("category")) & constRef & ".txt"
+        targetDept = dc & " "
+        refCategoryText = values(index("category"))
+        refCategoryText = refCategoryText & " " & constRef
     End If
-    ' 参照先の区分を取得する
+    fileName = fileName & " " & targetDept & refCategoryText & ".txt"
+    fileName = Replace(fileName, vbLf, "")
     
     CreateFileName = fileName
+
+End Function
+Private Function GetRefCategoryByItemName(category As String, itemName As String, index As Object, targetValues() As String) As String
+    Dim refCategory As String
+    Dim i As Integer
+    For i = LBound(targetValues, 2) To UBound(targetValues, 2)
+        If targetValues(index("itemName"), i) = itemName And targetValues(index("category"), i) <> category Then
+            refCategory = targetValues(index("category"), i)
+            Exit For
+        End If
+    Next i
+    GetRefCategoryByItemName = refCategory
 
 End Function
 Private Function GetRefCategoryName(inputText As String, constRef As String) As String
@@ -129,30 +174,41 @@ Private Function getDocumentColIndex() As Object
     index.Add "isr", 10
     Set getDocumentColIndex = index
 End Function
-Private Function GetTargetValues(inputValues, header) As String()
+Private Function GetCategoryHeaderList() As String()
+    Dim targetCategoryHeader(1) As String
+    targetCategoryHeader(0) = "QF"
+    targetCategoryHeader(1) = "ISF"
+    GetCategoryHeaderList = targetCategoryHeader
+End Function
+Private Function GetTargetValues(inputValues As Variant) As String()
+    Dim targetCategoryHeader() As String
+    targetCategoryHeader = GetCategoryHeaderList()
     Dim i As Integer
     Dim outputValues() As String
     Dim index As Object
     Set index = getDocumentColIndex()
     Dim count As Integer
+    Dim header As Variant
     count = 0
     For i = LBound(inputValues, 1) To UBound(inputValues, 1)
-        If Left(Trim(inputValues(i, index("category"))), Len(header)) = header Then
-            ReDim Preserve outputValues(4, count)
-            outputValues(0, count) = inputValues(i, index("category"))
-            outputValues(1, count) = inputValues(i, index("itemName"))
-            outputValues(2, count) = inputValues(i, index("format"))
-            outputValues(3, count) = inputValues(i, index("dc"))
-            outputValues(4, count) = inputValues(i, index("isr"))
-            count = count + 1
-        End If
+        For Each header In targetCategoryHeader
+            If Left(Trim(inputValues(i, index("category"))), Len(header)) = header Then
+                ReDim Preserve outputValues(4, count)
+                outputValues(0, count) = inputValues(i, index("category"))
+                outputValues(1, count) = inputValues(i, index("itemName"))
+                outputValues(2, count) = inputValues(i, index("format"))
+                outputValues(3, count) = inputValues(i, index("dc"))
+                outputValues(4, count) = inputValues(i, index("isr"))
+                count = count + 1
+            End If
+        Next header
     Next i
     GetTargetValues = outputValues()
 End Function
 Private Function GetTargetDocument() As Workbook
     Dim editPath As New ClassEditPath
     Dim inputFolderPath As String
-    Dim fileCollection As collection
+    Dim fileCollection As Collection
     Dim targetFilePathList() As String
     Dim targetYmd() As Long
     Dim file As Variant
@@ -195,99 +251,3 @@ Private Function GetTargetDocument() As Workbook
     Set GetTargetDocument = Workbooks.Open(targetFilePath)
     
 End Function
-
-
-Private Sub GenerateISOAuditFiles()
-    ' Clear temporary variables
-    Dim kInputPath As String
-    Dim fiscal_year As String
-    Dim kOutputParentPath As String
-    Dim kQmfHeader As String
-    Dim kIsmsHeader As String
-    Dim kIsms As String
-    Dim kQms As String
-    Dim kRefIsms As String
-    Dim kRefQms As String
-    Dim kRefCommon As String
-    Dim kTargetSign As String
-    Dim kIsrColName As String
-    Dim kDcColName As String
-    Dim kCategory As String
-    Dim kFormat As String
-    Dim kItemName As String
-    Dim kIsrName As String
-    Dim kDcName As String
-    Dim kPaper As String
-    
-    ' Assign constants
-    kInputPath = "~/Library/CloudStorage/Box-Box/Projects/ISO/QMS・ISMS文書/02 文書（ト゛ラフト）/D000 QMS・ISMS文書一覧 230922.xlsx"
-    fiscal_year = CalculateTodayFiscalYear()
-    kOutputParentPath = "~/Library/CloudStorage/Box-Box/Projects/ISO/QMS・ISMS文書/04 記録/" & fiscal_year & "年度/"
-    kQmfHeader = "QF"
-    kIsmsHeader = "ISF"
-    kIsms = "ISMS"
-    kQms = "QMS"
-    kRefIsms = kIsms & "参照"
-    kRefQms = kQms & "参照"
-    kRefCommon = "共通"
-    kTargetSign = "○"
-    kIsrColName = "...10"
-    kDcColName = "保管部門"
-    kCategory = "区分"
-    kFormat = "形式"
-    kItemName = "記録名"
-    kIsrName = "情報システム研究室"
-    kDcName = "データ管理室"
-    kPaper = "紙"
-    
-    ' Lock constants
-    ' (No equivalent VBA code is needed)
-    
-    ' Input file path
-    Dim input_path As String
-    input_path = kInputPath
-    
-    ' Read all sheets from the Excel file
-    Dim wb As Workbook
-    Dim all_sheets As Sheets
-    Dim sheet As Worksheet
-    Set wb = Workbooks.Open(fileName:=input_path)
-    Set all_sheets = wb.Sheets
-    Dim sheet_data As collection
-    Set sheet_data = New collection
-    
-    For Each sheet In all_sheets
-        ' Assuming you want to skip the first 4 rows when reading each sheet
-        Dim data As ListObject
-        Set data = sheet.ListObjects.Add(xlSrcRange, sheet.Range("A5").CurrentRegion, , xlYes)
-        sheet_data.Add data.DataBodyRange.Value
-    Next sheet
-    
-    ' Close the input workbook
-    wb.Close savechanges:=False
-    
-    ' Main processing code goes here...
-    ' You'll need to translate the R code to VBA.
-    ' It may involve creating subroutines for functions like FilterTargetDs, GenerateFilenames, etc.
-    ' and then calling those subroutines in the appropriate order.
-    
-    ' For example, you can create a subroutine for FilterTargetDs like this:
-    ' Sub FilterTargetDs(ds As Range)
-    '    ' Translate the R code for FilterTargetDs to VBA here...
-    ' End Sub
-    
-    ' Once you've translated the R code to VBA, call the subroutines to execute the main processing.
-    
-    ' Output files
-    ' You'll need to add VBA code to write output files.
-    
-End Sub
-
-Function CalculateTodayFiscalYear() As Integer
-    ' Translate the R code for CalculateTodayFiscalYear to VBA here...
-    ' Return the fiscal year as an integer
-End Function
-
-' Define other subroutines and functions as needed...
-
-

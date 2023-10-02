@@ -1,7 +1,7 @@
 Attribute VB_Name = "FileUtils"
 Option Explicit
 
-Public Function FilterFiles(fileCollection As collection, param As Variant) As collection
+Public Function FilterFiles(fileCollection As Collection, param As Variant) As Collection
     Dim filePath As Variant
     Dim targetFileName As Variant
     Dim fileName As String
@@ -13,7 +13,7 @@ Public Function FilterFiles(fileCollection As collection, param As Variant) As c
     Dim path As Variant
     Dim removePath As Variant
     Dim removeFlag As Boolean
-    Dim targetFileCollection As collection
+    Dim targetFileCollection As Collection
     removeCount = 0
             
     For Each targetFileName In param
@@ -45,7 +45,7 @@ Public Function FilterFiles(fileCollection As collection, param As Variant) As c
         End If
     Next targetFileName
     
-    Set targetFileCollection = New collection
+    Set targetFileCollection = New Collection
     For Each path In fileCollection
         removeFlag = False
         For Each removePath In removeTargetList
@@ -148,11 +148,11 @@ Public Function GetYmd(fileName As String) As Long
     GetYmd = tempFileName
 End Function
 
-Public Function GetAllFilesInFolder(ByVal folderPath As String) As collection
+Public Function GetAllFilesInFolder(ByVal folderPath As String) As Collection
     Dim fso As Object
     Dim parentFolder As Object
     Dim subFolder As Object
-    Dim filesCollection As collection
+    Dim filesCollection As Collection
     
     ' Create a FileSystemObject
     Set fso = CreateObject("Scripting.FileSystemObject")
@@ -161,7 +161,7 @@ Public Function GetAllFilesInFolder(ByVal folderPath As String) As collection
     Set parentFolder = fso.GetFolder(folderPath)
     
     ' Create a collection to store the file list
-    Set filesCollection = New collection
+    Set filesCollection = New Collection
     
     ' Add files in the parent folder to the collection
     AddFilesToCollection parentFolder, filesCollection
@@ -175,7 +175,7 @@ Public Function GetAllFilesInFolder(ByVal folderPath As String) As collection
     Set GetAllFilesInFolder = filesCollection
 End Function
 
-Public Sub AddFilesToCollection(ByVal FOLDER As Object, ByRef filesCollection As collection)
+Public Sub AddFilesToCollection(ByVal FOLDER As Object, ByRef filesCollection As Collection)
     Dim file As Object
     
     ' Add files in the folder to the collection
@@ -191,3 +191,30 @@ End Function
 Public Function GetFileExtension(fileName As String)
     GetFileExtension = Right(fileName, Len(fileName) - InStrRev(fileName, "."))
 End Function
+
+Public Sub CreateTextFile(outputFolderPath As String, fileName As String, text As String)
+    Dim fs As Object
+    Dim textFile As Object
+    Dim textStream As Object
+    Dim filePath As String
+
+    ' ファイルパスを設定
+    filePath = outputFolderPath & fileName & ".txt"
+
+    ' FileSystemObjectを作成
+    Set fs = CreateObject("Scripting.FileSystemObject")
+
+    ' ファイルを作成または既存のファイルを上書き
+    Set textFile = fs.CreateTextFile(filePath, True)
+
+    ' テキストデータを書き込む
+    Set textStream = textFile.OpenAsTextStream(2) ' 2は書き込みモードを指定します
+    textStream.WriteLine text
+    
+    ' ファイルを閉じる
+    textStream.Close
+    Set textStream = Nothing
+    Set textFile = Nothing
+    Set fs = Nothing
+End Sub
+
