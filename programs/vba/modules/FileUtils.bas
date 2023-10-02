@@ -195,7 +195,6 @@ End Function
 Public Sub CreateTextFile(outputFolderPath As String, fileName As String, text As String)
     Dim fs As Object
     Dim textFile As Object
-    Dim textStream As Object
     Dim filePath As String
 
     ' ファイルパスを設定
@@ -208,12 +207,10 @@ Public Sub CreateTextFile(outputFolderPath As String, fileName As String, text A
     Set textFile = fs.CreateTextFile(filePath, True)
 
     ' テキストデータを書き込む
-    Set textStream = textFile.OpenAsTextStream(2) ' 2は書き込みモードを指定します
-    textStream.WriteLine text
+    textFile.Write text
     
     ' ファイルを閉じる
-    textStream.Close
-    Set textStream = Nothing
+    textFile.Close
     Set textFile = Nothing
     Set fs = Nothing
 End Sub

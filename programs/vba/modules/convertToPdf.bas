@@ -19,36 +19,6 @@ Public Sub ExecConvertToPdf()
 
 End Sub
 
-Public Function CreateLatestFileList() As Collection
-    Dim myMap As Collection
-    Set myMap = New Collection
-    
-    Dim isf_latestFile As Collection
-    Set isf_latestFile = New Collection
-    isf_latestFile.Add "ISMS（情報システム研究室）"
-    isf_latestFile.Add "ISF01 "
-    isf_latestFile.Add "ISF23-1 "
-    isf_latestFile.Add "ISF25 "
-    isf_latestFile.Add "ISF27-1 "
-    isf_latestFile.Add "ISF27-2 "
-    isf_latestFile.Add "ISF27-3 "
-    isf_latestFile.Add "ISF27-4 "
-    isf_latestFile.Add "ISF27-7 "
-    myMap.Add isf_latestFile
-    
-    Dim qf_latestFile As Collection
-    Set qf_latestFile = New Collection
-    qf_latestFile.Add "QMS（情報システム研究室）"
-    qf_latestFile.Add "QF01 "
-    qf_latestFile.Add "QF04 "
-    qf_latestFile.Add "QF06 "
-    qf_latestFile.Add "QF13 "
-    qf_latestFile.Add "QF23 "
-    myMap.Add qf_latestFile
-    
-    Set CreateLatestFileList = myMap
-End Function
-
 Private Sub ConvertToPdf(targetFolderName As String, param As Variant)
     Dim wordObject As Object
     Dim fileName As String

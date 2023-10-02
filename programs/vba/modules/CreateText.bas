@@ -1,15 +1,6 @@
 Attribute VB_Name = "CreateText"
 Option Explicit
-
-
-Public Sub testcreatetext()
-    Dim editPath As New ClassEditPath
-    Dim outputFolderPath As String
-    Dim paramList As Collection
-    Set paramList = CreateLatestFileList()
-    outputFolderPath = editPath.GetOutputPath(targetFolderName)
-    
-    Dim targetWorksheet As Variant
+Public Sub ExecCreateTextFunction()
     Call GetTargetWorksheets
 End Sub
 Private Sub GetTargetWorksheets()
@@ -48,13 +39,30 @@ Private Sub GetTargetWorksheets()
     targetSheetValues = wk1Worksheet.UsedRange.Value
     targetValues = GetTargetValues(targetSheetValues)
     fileNames = CreateFileNames(targetValues)
+    Call ExecCreateTextFile(fileNames)
     wk1Worksheet.Cells.Clear
         
 End Sub
-Private Sub CreateTextFile(fileNames() As String)
-    Dim targetCategoryHeader() As String
-    targetCategoryHeader = GetCategoryHeaderList()
-
+Private Sub ExecCreateTextFile(fileNames() As String)
+    Dim functionLibrary As New ClassFunctionLibrary
+    Dim pathList As Object
+    Set pathList = functionLibrary.outputFolderPathList
+    Dim pathKeys As Variant
+    pathKeys = pathList.Keys
+    Dim fileName As Variant
+    Dim fileHead As Variant
+    Dim filePath As String
+    For Each fileName In fileNames
+        Dim text As String
+        text = ""
+        For Each fileHead In pathKeys
+            If Left(fileName, Len(fileHead)) = fileHead Then
+                filePath = pathList(fileHead)
+                Call CreateTextFile(filePath, CStr(fileName), text)
+                Exit For
+            End If
+        Next fileHead
+    Next fileName
 End Sub
 Private Function CreateFileNames(targetValues() As String) As String()
     Dim index As Object
