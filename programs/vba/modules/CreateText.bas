@@ -124,7 +124,7 @@ Private Function CreateFileName(values() As String, index As Object, targetValue
         refCategoryText = values(index("category"))
         refCategoryText = refCategoryText & " " & constRef
     End If
-    fileName = fileName & " " & targetDept & refCategoryText & ".txt"
+    fileName = fileName & " " & targetDept & refCategoryText
     fileName = Replace(fileName, vbLf, "")
     
     CreateFileName = fileName
@@ -134,7 +134,7 @@ Private Function GetRefCategoryByItemName(category As String, itemName As String
     Dim refCategory As String
     Dim i As Integer
     For i = LBound(targetValues, 2) To UBound(targetValues, 2)
-        If targetValues(index("itemName"), i) = itemName And targetValues(index("category"), i) <> category Then
+        If Replace(targetValues(index("itemName"), i), vbLf, "") = itemName And targetValues(index("category"), i) <> category Then
             refCategory = targetValues(index("category"), i)
             Exit For
         End If
