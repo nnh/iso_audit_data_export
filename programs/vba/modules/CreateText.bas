@@ -96,7 +96,10 @@ Private Function CreateFileName(values() As String, index As Object, targetValue
     Dim targetDept As String
     Const dc As String = "データ管理室"
     Const isr As String = "情報システム研究室"
-    If values(index("isr")) = "○" Then
+    If values(index("isr")) = "○" And _
+       ( _
+        Left(values(index("category")), 5) <> "ISF12" _
+       ) Then
         CreateFileName = ""
         Exit Function
     End If
