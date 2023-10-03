@@ -1,5 +1,4 @@
 Attribute VB_Name = "ExportVba"
-' Tools > Reference Settings > Microsoft Scripting runtime
 Option Explicit
 
 Public Sub ExportVbaFiles()

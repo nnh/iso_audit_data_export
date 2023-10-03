@@ -46,10 +46,10 @@ Private Sub GetTargetWorksheets()
         fileNameAndTextDic.Add fileName, ""
     Next fileName
     fileNameAndTextDic.Add "ISF19 仕様書", "Box/Datacenter/ISR/Ptosh/Ptosh Validation"
-    fileNameAndTextDic.Add "ISF22 ロク゛テ゛ータ DC入退室", "\\aronas\Archives\Log\DC入退室"
-    fileNameAndTextDic.Add "ISF22 ロク゛テ゛ータ PivotalTracker", "\\aronas\Archives\PivotalTracker"
-    fileNameAndTextDic.Add "ISF22 ロク゛テ゛ータ UTM", "\\aronas\Archives\ISR\SystemAssistant\monthlyOperations"
-    fileNameAndTextDic.Add "ISF22 ロク゛テ゛ータ VPN", "\\aronas\Archives\Log\VPN"
+    fileNameAndTextDic.Add "ISF22 ログデータ DC入退室", "\\aronas\Archives\Log\DC入退室"
+    fileNameAndTextDic.Add "ISF22 ログデータ PivotalTracker", "\\aronas\Archives\PivotalTracker"
+    fileNameAndTextDic.Add "ISF22 ログデータ UTM", "\\aronas\Archives\ISR\SystemAssistant\monthlyOperations"
+    fileNameAndTextDic.Add "ISF22 ログデータ VPN", "\\aronas\Archives\Log\VPN"
     Dim qf20Path As String
     qf20Path = "\Box\Projects\ISO\QMS・ISMS文書\06 その他\研修資料\" & GetFiscalYear() & "年度 "
     fileNameAndTextDic.Add "QF30 教育資料", qf20Path
@@ -58,9 +58,9 @@ Private Sub GetTargetWorksheets()
         
 End Sub
 Private Sub ExecCreateTextFile(fileNameAndTextDic As Object)
-    Dim functionLibrary As New ClassFunctionLibrary
+    Dim folderPathManager As New ClassFolderPathManager
     Dim pathList As Object
-    Set pathList = functionLibrary.outputFolderPathList
+    Set pathList = folderPathManager.outputFolderPathList
     Dim pathKeys As Variant
     pathKeys = pathList.Keys
     Dim fileName As Variant
@@ -97,7 +97,6 @@ Private Function CreateFileNames(targetValues() As String) As String()
         Next j
         fileName = CreateFileName(arr, index, targetValues)
         If fileName <> "" Then
-            Debug.Print fileName
             ReDim Preserve targetFilenames(fileNameCount)
             targetFilenames(fileNameCount) = fileName
             fileNameCount = fileNameCount + 1
@@ -111,7 +110,6 @@ Private Function CreateFileName(values() As String, index As Object, targetValue
     Dim temp As Variant
     Dim targetDept As String
     Const dc As String = "データ管理室"
-    Const isr As String = "情報システム研究室"
     If values(index("isr")) = "○" And _
        ( _
         Left(values(index("category")), 5) <> "ISF12" _

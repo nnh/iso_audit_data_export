@@ -1,21 +1,17 @@
 Attribute VB_Name = "convertToPdf"
-' Tools > Reference Settings > Microsoft Word 16.0 Object Library
 Option Explicit
-Public Const debugFlag As Boolean = True
 
-Public Sub ExecConvertToPdf()
-    Dim file As Variant
-    Dim paramList As Collection
-    Set paramList = CreateLatestFileList()
-    Dim targetFolderName As String
-    
-    Dim param As Variant
-    For Each param In paramList
-        targetFolderName = param.Item(1)
-        param.Remove 1
-        Call ConvertToPdf(targetFolderName, param)
-    Next param
-    MsgBox "PDF conversion completed.", vbInformation
+Public Sub ExecConvertToPdfLatestFile()
+    Dim folderPathManager As New ClassFolderPathManager
+    Dim latestFiles As Object
+    Set latestFiles = folderPathManager.CreateLatestFileList()
+    Dim latestFile As Variant
+    Dim targetKeys As Variant
+    targetKeys = latestFiles.Keys
+    Dim targetKey As Variant
+    For Each targetKey In targetKeys
+        Call ConvertToPdf(folderPathManager.folderNameList(targetKey), latestFiles(targetKey))
+    Next targetKey
 
 End Sub
 
@@ -32,8 +28,8 @@ Private Sub ConvertToPdf(targetFolderName As String, param As Variant)
     Dim dummy As Variant
     Dim editPath As New ClassEditPath
     Dim inputFolderPath As String
-    inputFolderPath = editPath.GetInputPath(targetFolderName)
     Dim outputFolderPath As String
+    inputFolderPath = editPath.GetInputPath(targetFolderName)
     outputFolderPath = editPath.GetOutputPath(targetFolderName)
     
     ' Create an instance of the application to manipulate files
