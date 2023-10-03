@@ -39,11 +39,25 @@ Private Sub GetTargetWorksheets()
     targetSheetValues = wk1Worksheet.UsedRange.Value
     targetValues = GetTargetValues(targetSheetValues)
     fileNames = CreateFileNames(targetValues)
-    Call ExecCreateTextFile(fileNames)
+    Dim fileNameAndTextDic As Object
+    Set fileNameAndTextDic = CreateObject("Scripting.Dictionary")
+    Dim fileName As Variant
+    For Each fileName In fileNames
+        fileNameAndTextDic.Add fileName, ""
+    Next fileName
+    fileNameAndTextDic.Add "ISF19 仕様書", "Box/Datacenter/ISR/Ptosh/Ptosh Validation"
+    fileNameAndTextDic.Add "ISF22 ロク゛テ゛ータ DC入退室", "\\aronas\Archives\Log\DC入退室"
+    fileNameAndTextDic.Add "ISF22 ロク゛テ゛ータ PivotalTracker", "\\aronas\Archives\PivotalTracker"
+    fileNameAndTextDic.Add "ISF22 ロク゛テ゛ータ UTM", "\\aronas\Archives\ISR\SystemAssistant\monthlyOperations"
+    fileNameAndTextDic.Add "ISF22 ロク゛テ゛ータ VPN", "\\aronas\Archives\Log\VPN"
+    Dim qf20Path As String
+    qf20Path = "\Box\Projects\ISO\QMS・ISMS文書\06 その他\研修資料\" & GetFiscalYear() & "年度 "
+    fileNameAndTextDic.Add "QF30 教育資料", qf20Path
+    Call ExecCreateTextFile(fileNameAndTextDic)
     wk1Worksheet.Cells.Clear
         
 End Sub
-Private Sub ExecCreateTextFile(fileNames() As String)
+Private Sub ExecCreateTextFile(fileNameAndTextDic As Object)
     Dim functionLibrary As New ClassFunctionLibrary
     Dim pathList As Object
     Set pathList = functionLibrary.outputFolderPathList
@@ -52,9 +66,11 @@ Private Sub ExecCreateTextFile(fileNames() As String)
     Dim fileName As Variant
     Dim fileHead As Variant
     Dim filePath As String
+    Dim fileNames As Variant
+    fileNames = fileNameAndTextDic.Keys
     For Each fileName In fileNames
         Dim text As String
-        text = ""
+        text = fileNameAndTextDic(fileName)
         For Each fileHead In pathKeys
             If Left(fileName, Len(fileHead)) = fileHead Then
                 filePath = pathList(fileHead)
@@ -108,7 +124,10 @@ Private Function CreateFileName(values() As String, index As Object, targetValue
     Dim fileName As String
     Dim refCategoryText As String
     fileName = textHeader
-    If InStr(1, values(index("format")), "紙") Then
+    If InStr(1, values(index("format")), "紙") And _
+       ( _
+        Left(values(index("category")), 4) <> "QF22" _
+       ) Then
         targetDept = dc
         refCategoryText = "紙保管"
     ' ISRに…参照の文字列が存在する場合、ファイル名は「【区分】【記録名】情報システム研究室【区分】参照」
