@@ -135,7 +135,7 @@ End Function
 Public Function GetYmd(fileName As String) As Long
     Dim regex As RegExp
     Set regex = New RegExp
-    regex.Pattern = "\(\d{6}\)$|\d{8}$"
+    regex.Pattern = "Â¥(Â¥d{6}Â¥)$|Â¥d{8}$"
     Dim tempFileName As String
     If regex.test(fileName) Then
         tempFileName = CLng(regex.Execute(fileName)(0).Value)
@@ -185,7 +185,7 @@ Public Sub AddFilesToCollection(ByVal FOLDER As Object, ByRef filesCollection As
 End Sub
 
 Public Function GetFileName(path As Variant) As String
-    GetFileName = Right(path, Len(path) - InStrRev(path, "\"))
+    GetFileName = Right(path, Len(path) - InStrRev(path, "Â¥"))
 End Function
 
 Public Function GetFileExtension(fileName As String)
@@ -197,19 +197,19 @@ Public Sub CreateTextFile(outputFolderPath As String, fileName As String, text A
     Dim textFile As Object
     Dim filePath As String
 
-    ' ƒtƒ@ƒCƒ‹ƒpƒX‚ğİ’è
+    ' ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’è¨­å®š
     filePath = outputFolderPath & fileName & ".txt"
 
-    ' FileSystemObject‚ğì¬
+    ' FileSystemObjectã‚’ä½œæˆ
     Set fs = CreateObject("Scripting.FileSystemObject")
 
-    ' ƒtƒ@ƒCƒ‹‚ğì¬‚Ü‚½‚ÍŠù‘¶‚Ìƒtƒ@ƒCƒ‹‚ğã‘‚«
+    ' ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã¾ãŸã¯æ—¢å­˜ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¸Šæ›¸ã
     Set textFile = fs.CreateTextFile(filePath, True)
 
-    ' ƒeƒLƒXƒgƒf[ƒ^‚ğ‘‚«‚Ş
+    ' ãƒ†ã‚­ã‚¹ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€
     textFile.Write text
     
-    ' ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚é
+    ' ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹
     textFile.Close
     Set textFile = Nothing
     Set fs = Nothing

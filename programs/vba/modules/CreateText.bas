@@ -7,8 +7,8 @@ Private Sub GetTargetWorksheets()
     Dim wb As Workbook
     Dim i As Integer
     Dim targetSheetName(1) As String
-    targetSheetName(0) = "•¶‘ŠÇ—‘ä’ (2)"
-    targetSheetName(1) = "•¶‘ŠÇ—‘ä’ (3)"
+    targetSheetName(0) = "æ–‡æ›¸ç®¡ç†å°å¸³(2)"
+    targetSheetName(1) = "æ–‡æ›¸ç®¡ç†å°å¸³(3)"
     Dim targetSheetValues As Variant
     Set wb = GetTargetDocument()
     If wb Is Nothing Then
@@ -45,14 +45,14 @@ Private Sub GetTargetWorksheets()
     For Each fileName In fileNames
         fileNameAndTextDic.Add fileName, ""
     Next fileName
-    fileNameAndTextDic.Add "ISF19 d—l‘", "Box/Datacenter/ISR/Ptosh/Ptosh Validation"
-    fileNameAndTextDic.Add "ISF22 ƒƒOƒf[ƒ^ DC“ü‘Şº", "\\aronas\Archives\Log\DC“ü‘Şº"
-    fileNameAndTextDic.Add "ISF22 ƒƒOƒf[ƒ^ PivotalTracker", "\\aronas\Archives\PivotalTracker"
-    fileNameAndTextDic.Add "ISF22 ƒƒOƒf[ƒ^ UTM", "\\aronas\Archives\ISR\SystemAssistant\monthlyOperations"
-    fileNameAndTextDic.Add "ISF22 ƒƒOƒf[ƒ^ VPN", "\\aronas\Archives\Log\VPN"
+    fileNameAndTextDic.Add "ISF19 ä»•æ§˜æ›¸", "Box/Datacenter/ISR/Ptosh/Ptosh Validation"
+    fileNameAndTextDic.Add "ISF22 ãƒ­ã‚°ãƒ‡ãƒ¼ã‚¿ DCå…¥é€€å®¤", "Â¥Â¥aronasÂ¥ArchivesÂ¥LogÂ¥DCå…¥é€€å®¤"
+    fileNameAndTextDic.Add "ISF22 ãƒ­ã‚°ãƒ‡ãƒ¼ã‚¿ PivotalTracker", "Â¥Â¥aronasÂ¥ArchivesÂ¥PivotalTracker"
+    fileNameAndTextDic.Add "ISF22 ãƒ­ã‚°ãƒ‡ãƒ¼ã‚¿ UTM", "Â¥Â¥aronasÂ¥ArchivesÂ¥ISRÂ¥SystemAssistantÂ¥monthlyOperations"
+    fileNameAndTextDic.Add "ISF22 ãƒ­ã‚°ãƒ‡ãƒ¼ã‚¿ VPN", "Â¥Â¥aronasÂ¥ArchivesÂ¥LogÂ¥VPN"
     Dim qf20Path As String
-    qf20Path = "\Box\Projects\ISO\QMSEISMS•¶‘\06 ‚»‚Ì‘¼\Œ¤C‘—¿\" & GetFiscalYear() & "”N“x "
-    fileNameAndTextDic.Add "QF30 ‹³ˆç‘—¿", qf20Path
+    qf20Path = "Â¥BoxÂ¥ProjectsÂ¥ISOÂ¥QMSãƒ»ISMSæ–‡æ›¸Â¥06 ãã®ä»–Â¥ç ”ä¿®è³‡æ–™Â¥" & GetFiscalYear() & "å¹´åº¦ "
+    fileNameAndTextDic.Add "QF30 æ•™è‚²è³‡æ–™", qf20Path
     Call ExecCreateTextFile(fileNameAndTextDic)
     wk1Worksheet.Cells.Clear
         
@@ -105,12 +105,12 @@ Private Function CreateFileNames(targetValues() As String) As String()
     CreateFileNames = targetFilenames
 End Function
 Private Function CreateFileName(values() As String, index As Object, targetValues() As String) As String
-    Const constRef As String = "QÆ"
+    Const constRef As String = "å‚ç…§"
     Dim textHeader As String
     Dim temp As Variant
     Dim targetDept As String
-    Const dc As String = "ƒf[ƒ^ŠÇ—º"
-    If (values(index("isr")) = "›" And _
+    Const dc As String = "ãƒ‡ãƒ¼ã‚¿ç®¡ç†å®¤"
+    If (values(index("isr")) = "â—‹" And _
         ( _
          Left(values(index("category")), 5) <> "ISF12" _
         ) _
@@ -119,28 +119,28 @@ Private Function CreateFileName(values() As String, index As Object, targetValue
         CreateFileName = ""
         Exit Function
     End If
-    ' uy‹æ•ªzy‹L˜^–¼zv‚Ü‚Å‚Í‹¤’Ê
+    ' ã€Œã€åŒºåˆ†ã€‘ã€è¨˜éŒ²åã€‘ã€ã¾ã§ã¯å…±é€š
     textHeader = values(index("category")) & " " & values(index("itemName"))
     Dim fileName As String
     Dim refCategoryText As String
     fileName = textHeader
-    If InStr(1, values(index("format")), "†") And _
+    If InStr(1, values(index("format")), "ç´™") And _
        ( _
         Left(values(index("category")), 4) <> "QF22" _
        ) Then
         targetDept = dc
-        refCategoryText = "†•ÛŠÇ"
-    ' ISR‚ÉcQÆ‚Ì•¶š—ñ‚ª‘¶İ‚·‚éê‡Aƒtƒ@ƒCƒ‹–¼‚Íuy‹æ•ªzy‹L˜^–¼zî•ñƒVƒXƒeƒ€Œ¤‹†ºy‹æ•ªzQÆv
+        refCategoryText = "ç´™ä¿ç®¡"
+    ' ISRã«â€¦å‚ç…§ã®æ–‡å­—åˆ—ãŒå­˜åœ¨ã™ã‚‹å ´åˆã€ãƒ•ã‚¡ã‚¤ãƒ«åã¯ã€Œã€åŒºåˆ†ã€‘ã€è¨˜éŒ²åã€‘æƒ…å ±ã‚·ã‚¹ãƒ†ãƒ ç ”ç©¶å®¤ã€åŒºåˆ†ã€‘å‚ç…§ã€
     ElseIf InStr(1, values(index("isr")), constRef) > 0 Then
         targetDept = isr
         refCategoryText = GetRefCategoryByItemName(values(index("category")), values(index("itemName")), index, targetValues)
         refCategoryText = refCategoryText & constRef
-    ' DC‚ÉcQÆ‚Ì•¶š—ñ‚ª‘¶İ‚·‚éê‡Aƒtƒ@ƒCƒ‹–¼‚Íuy‹æ•ªzy‹L˜^–¼zƒf[ƒ^ŠÇ—ºy‹æ•ªzQÆv
+    ' DCã«â€¦å‚ç…§ã®æ–‡å­—åˆ—ãŒå­˜åœ¨ã™ã‚‹å ´åˆã€ãƒ•ã‚¡ã‚¤ãƒ«åã¯ã€Œã€åŒºåˆ†ã€‘ã€è¨˜éŒ²åã€‘ãƒ‡ãƒ¼ã‚¿ç®¡ç†å®¤ã€åŒºåˆ†ã€‘å‚ç…§ã€
     ElseIf InStr(1, values(index("dc")), constRef) > 0 Then
         targetDept = dc
         refCategoryText = GetRefCategoryByItemName(values(index("category")), values(index("itemName")), index, targetValues)
         refCategoryText = refCategoryText & constRef
-    ' ISR‚ª‹ó”’‚ÅDC‚ª›‚Ìê‡Aƒtƒ@ƒCƒ‹–¼‚Íuy‹æ•ªzy‹L˜^–¼zƒf[ƒ^ŠÇ—ºy‹æ•ªzQÆv
+    ' ISRãŒç©ºç™½ã§DCãŒâ—‹ã®å ´åˆã€ãƒ•ã‚¡ã‚¤ãƒ«åã¯ã€Œã€åŒºåˆ†ã€‘ã€è¨˜éŒ²åã€‘ãƒ‡ãƒ¼ã‚¿ç®¡ç†å®¤ã€åŒºåˆ†ã€‘å‚ç…§ã€
     ElseIf values(index("isr")) = "" And values(index("dc")) <> "" Then
         targetDept = dc
         refCategoryText = values(index("category"))

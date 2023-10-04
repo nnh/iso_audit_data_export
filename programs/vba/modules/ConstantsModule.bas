@@ -4,12 +4,12 @@ Attribute VB_Name = "ConstantsModule"
 Option Explicit
 
 Public Const debugFlag As Boolean = True
-Public Const isr As String = "î•ñƒVƒXƒeƒ€Œ¤‹†Žº"
+Public Const isr As String = "æƒ…å ±ã‚·ã‚¹ãƒ†ãƒ ç ”ç©¶å®¤"
 
 Public Sub main()
     Call ExecConvertToPdfLatestFile
     Call ExecCreateTextFunction
-    MsgBox "ˆ—‚ªI—¹‚µ‚Ü‚µ‚½"
+    MsgBox "å‡¦ç†ãŒçµ‚äº†ã—ã¾ã—ãŸ"
     ThisWorkbook.Close savechanges:=False
     Application.Quit
 End Sub

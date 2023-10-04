@@ -30,8 +30,8 @@ End Sub
 Private Function CreateTargetFolderNameList() As Object
     Dim folderNameList As Object
     Set folderNameList = CreateObject("Scripting.Dictionary")
-    folderNameList.Add constIsms, "ISMSÅi" & isr & "Åj"
-    folderNameList.Add constQms, "QMSÅi" & isr & "Åj"
+    folderNameList.Add constIsms, "ISMSÔºà" & isr & "Ôºâ"
+    folderNameList.Add constQms, "QMSÔºà" & isr & "Ôºâ"
     Set CreateTargetFolderNameList = folderNameList
 End Function
 

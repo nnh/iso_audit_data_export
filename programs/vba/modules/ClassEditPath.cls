@@ -15,19 +15,19 @@ Private fiscalYear As Integer
 Private Sub Class_Initialize()
     fiscalYear = GetFiscalYear()
     Dim parentPathHeaderHead As String
-    parentPathHeaderHead = "C:\Users\Mariko\Box\Projects\ISO\QMS・ISMS文書\04 記録\"
-    parentPathHeader = parentPathHeaderHead & fiscalYear & "年度\"
+    parentPathHeaderHead = "C:ﾂ･Usersﾂ･Marikoﾂ･Boxﾂ･Projectsﾂ･ISOﾂ･QMS繝ｻISMS譁�譖ｸﾂ･04 險倬鹸ﾂ･"
+    parentPathHeader = parentPathHeaderHead & fiscalYear & "蟷ｴ蠎ｦﾂ･"
 End Sub
 
 Public Function GetInputPath(folderName As String) As String
     Dim targetPath As String
     targetPath = GetDraftPath(parentPathHeader)
-    GetInputPath = targetPath & "\" & folderName & "\"
+    GetInputPath = targetPath & "ﾂ･" & folderName & "ﾂ･"
     '
 End Function
 
 Private Function GetDraftPath(parentFolderPath As String) As String
-    Const constDraftTextPart As String = "ラフト"
+    Const constDraftTextPart As String = "繝ｩ繝輔ヨ"
     Dim parentFolder As Variant
     Dim fso As FileSystemObject
     Dim subFolders As Variant
@@ -49,15 +49,15 @@ End Function
 
 Public Function GetOutputPath(folderName As String) As String
     If debugFlag Then
-        GetOutputPath = "C:\Users\Mariko\Box\Datacenter\Users\ohtsuka\2023\20230926\output\" & folderName & "\"
+        GetOutputPath = "C:ﾂ･Usersﾂ･Marikoﾂ･Boxﾂ･Datacenterﾂ･Usersﾂ･ohtsukaﾂ･2023ﾂ･20230926ﾂ･outputﾂ･" & folderName & "ﾂ･"
     Else
-        GetOutputPath = parentPathHeader & "固定\" & folderName & "\"
+        GetOutputPath = parentPathHeader & "蝗ｺ螳堋･" & folderName & "ﾂ･"
     End If
 End Function
 
 Public Function GetDocumentListPath() As String
     Dim parentPathHeaderHead As String
-    parentPathHeaderHead = "C:\Users\Mariko\Box\Projects\ISO\QMS・ISMS文書\"
+    parentPathHeaderHead = "C:ﾂ･Usersﾂ･Marikoﾂ･Boxﾂ･Projectsﾂ･ISOﾂ･QMS繝ｻISMS譁�譖ｸﾂ･"
     GetDocumentListPath = GetDraftPath(parentPathHeaderHead)
 
 End Function

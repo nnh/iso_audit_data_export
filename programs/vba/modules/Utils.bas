@@ -26,14 +26,14 @@ Public Function ToNFC(str) As String
     i = 1
     
     Do
-        i = InStr(str, ChrW(12443))             'ë˜ì_
+        i = InStr(str, ChrW(12443))             'ÊøÅÁÇπ
         If i = 0 Then Exit Do
         nfdChrs = Mid(str, i - 1, 2)
         nfcChr = ChrW(AscW(Mid(str, i - 1, 1)) + 1)
         str = Replace(str, nfdChrs, nfcChr)
     Loop
     Do
-        i = InStr(str, ChrW(12444))             'îºë˜ì_
+        i = InStr(str, ChrW(12444))             'ÂçäÊøÅÁÇπ
         If i = 0 Then Exit Do
         nfdChrs = Mid(str, i - 1, 2)
         nfcChr = ChrW(AscW(Mid(str, i - 1, 1)) + 2)
