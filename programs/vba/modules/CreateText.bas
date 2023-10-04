@@ -130,19 +130,19 @@ Private Function CreateFileName(values() As String, index As Object, targetValue
         refCategoryText = "紙保管"
     ' ISRに…参照の文字列が存在する場合、ファイル名は「【区分】【記録名】情報システム研究室【区分】参照」
     ElseIf InStr(1, values(index("isr")), constRef) > 0 Then
-        targetDept = isr & " "
+        targetDept = isr
         refCategoryText = GetRefCategoryByItemName(values(index("category")), values(index("itemName")), index, targetValues)
-        refCategoryText = refCategoryText & " " & constRef
+        refCategoryText = refCategoryText & constRef
     ' DCに…参照の文字列が存在する場合、ファイル名は「【区分】【記録名】データ管理室【区分】参照」
     ElseIf InStr(1, values(index("dc")), constRef) > 0 Then
-        targetDept = dc & " "
+        targetDept = dc
         refCategoryText = GetRefCategoryByItemName(values(index("category")), values(index("itemName")), index, targetValues)
-        refCategoryText = refCategoryText & " " & constRef
+        refCategoryText = refCategoryText & constRef
     ' ISRが空白でDCが○の場合、ファイル名は「【区分】【記録名】データ管理室【区分】参照」
     ElseIf values(index("isr")) = "" And values(index("dc")) <> "" Then
-        targetDept = dc & " "
+        targetDept = dc
         refCategoryText = values(index("category"))
-        refCategoryText = refCategoryText & " " & constRef
+        refCategoryText = refCategoryText & constRef
     End If
     fileName = fileName & " " & targetDept & refCategoryText
     fileName = Replace(fileName, vbLf, "")
