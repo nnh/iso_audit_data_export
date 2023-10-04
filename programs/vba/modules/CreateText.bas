@@ -110,10 +110,12 @@ Private Function CreateFileName(values() As String, index As Object, targetValue
     Dim temp As Variant
     Dim targetDept As String
     Const dc As String = "ÉfÅ[É^ä«óùé∫"
-    If values(index("isr")) = "Åõ" And _
-       ( _
-        Left(values(index("category")), 5) <> "ISF12" _
-       ) Then
+    If (values(index("isr")) = "Åõ" And _
+        ( _
+         Left(values(index("category")), 5) <> "ISF12" _
+        ) _
+       ) Or _
+       Left(values(index("category")), 4) = "QF30" Then
         CreateFileName = ""
         Exit Function
     End If
